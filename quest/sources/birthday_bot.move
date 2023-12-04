@@ -39,6 +39,7 @@ module overmind::birthday_bot {
         account_address: address,
     ) {
         // TODO: assert that `DistributionStore` exists
+        assert!(exist<DistributionStore>(account_address), error::invalid_state( ERROR_DISTRIBUTION_STORE_EXIST ) );
     }
 
     public fun assert_distribution_store_does_not_exist(
