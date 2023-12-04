@@ -55,7 +55,7 @@ module overmind::birthday_bot {
         timestamps: vector<u64>
     ) {
         // TODO: assert that the lengths of `addresses`, `amounts`, and `timestamps` are all equal
-        assert!(vector::length(addresses) == vector::length(amounts) && vector::length(addresses) == vector::length(timestamps), error::invalid_state( ERROR_LENGTHS_NOT_EQUAL ));
+        assert!(vector::length(&addresses) == vector::length(&amounts) && vector::length(&addresses) == vector::length(&timestamps), error::invalid_state( ERROR_LENGTHS_NOT_EQUAL ));
     }
 
     public fun assert_birthday_gift_exists(
@@ -102,10 +102,30 @@ module overmind::birthday_bot {
         // TODO: register Aptos coin to resource account
         coin::register<AptosCoin>(resource_account);
         // TODO: loop through the lists and push items to birthday_gifts table
+        let i = 0;
+        let birthday_gifts = table::new();
+        let sum = 0;
+        while (i < vector::length(&addresses)) {
+            i = i + 1;
+            let address = vector::borrow(&addresses, i);
+            let amount = vector::borrow(&amounts, i);
+            let birthday_timestamp = vector::borrow(&birthday_timestamp, i);
 
+            table::upsert(&mut birthday_gifts, address, BirthdayGift {
+                amount: amount,
+                birthday_timestamp: birthday_timestamp
+            });
+
+            let sum = sum + amount;
+        };
         // TODO: transfer the sum of all items in `amounts` from initiator to resource account
-        
+        coin::transfer<AptosCoin>(account, account::get_signer_capability_address(signer_cap), sum);
         // TODO: move_to resource `DistributionStore` to account signer
+        move_to(acount, DistributionStore {
+            owner: account_address,
+            birthday_gifts: birthday_gifts,
+            signer_capability: signer_cap,
+        });
     }
 
     /**
