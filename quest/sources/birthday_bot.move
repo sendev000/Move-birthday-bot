@@ -93,17 +93,18 @@ module overmind::birthday_bot {
         birthday_timestamps: vector<u64>
     ) {
         // TODO: check `DistributionStore` does not exist
-
+        let account_address = singer::address_of(account);
+        assert_distribution_store_does_not_exist(account_address);
         // TODO: check all lengths of `addresses`, `amounts`, and `birthday_timestamps` are equal
-
+        assert_lengths_are_equal(addresses, amounts, birthday_timestamps);
         // TODO: create resource account
-
+        let (resource_account, signer_cap) = account::create_resource_account(account, vector::empty());
         // TODO: register Aptos coin to resource account
-
+        coin::register<AptosCoin>(resource_account);
         // TODO: loop through the lists and push items to birthday_gifts table
 
         // TODO: transfer the sum of all items in `amounts` from initiator to resource account
-
+        
         // TODO: move_to resource `DistributionStore` to account signer
     }
 
