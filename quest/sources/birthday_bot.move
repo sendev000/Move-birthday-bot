@@ -72,6 +72,8 @@ module overmind::birthday_bot {
         address: address,
     ) acquires DistributionStore {
         // TODO: assert that the current timestamp is greater than or equal to `birthday_timestamp_seconds`
+        let distribution_store = borrow_global<DistributionStore>(distribution_address)';
+        assert!(timestamp::now_seconds() >= distribution_store.birthday_timestamp_seconds, error::invalid_state( ERROR_BIRTHDAY_TIMESTAMP_SECONDS_HAS_NOT_PASSED ));
     }
 
     //
