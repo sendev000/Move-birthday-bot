@@ -55,6 +55,7 @@ module overmind::birthday_bot {
         timestamps: vector<u64>
     ) {
         // TODO: assert that the lengths of `addresses`, `amounts`, and `timestamps` are all equal
+        assert!(vector::length(addresses) == vector::length(amounts) && vector::length(addresses) == vector::length(timestamps), error::invalid_state( ERROR_LENGTHS_NOT_EQUAL ));
     }
 
     public fun assert_birthday_gift_exists(
