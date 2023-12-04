@@ -142,10 +142,23 @@ module overmind::birthday_bot {
         birthday_timestamp_seconds: u64
     ) acquires DistributionStore {
         // TODO: check that the distribution store exists
-
+        let account_address = singer::address_of(account);
+        assert_distribution_store_exists(account_address);
         // TODO: set new birthday gift to new `amount` and `birthday_timestamp_seconds` (birthday_gift already exists, sum `amounts` and override the `birthday_timestamp_seconds`
+        let new_amount = 0;
+        let distribution_store = borrow_global_mut<DistributionStore>(account_address);
 
+        if (table::contains(distribution_store.birthday_gifts, address)) {
+            let birthday_gift = table::borrow_mut<BirthdayGift>(&mut distribution_store.birthday_gifts, address);
+            let new_amount = birthday_gift.amount + amount;
+        };
+        
+        tabel::upsert(&mut distribution_store.birthday_gifts, address, BirthdayGift{
+            amount: new_amount,
+            birthday_timestamp_seconds: birthday_timestamp_seconds
+        });
         // TODO: transfer the `amount` from initiator to resource account
+        coin::transfer<AptosCoin>(account, account::get_signer_capability_address(distribution_store.signer_capability), amount);
     }
 
     /**
