@@ -63,6 +63,8 @@ module overmind::birthday_bot {
         address: address,
     ) acquires DistributionStore {
         // TODO: assert that `birthday_gifts` exists
+        let distribution_store = borrow_global<DistributionStore>(distribution_address)';
+        assert!(table::contains(distribution_store.birthday_gifts, address), error::invalid_state( ERROR_BIRTHDAY_GIFT_DOES_NOT_EXIST ));
     }
 
     public fun assert_birthday_timestamp_seconds_has_passed(
